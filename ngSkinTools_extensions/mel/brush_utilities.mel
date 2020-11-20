@@ -1,0 +1,58 @@
+global proc ngSkinAlexUtilInitialize(int $surfaceName)
+{
+    string $pythonInstance = "UseNgBrush = ng_extra_tools.UseNgBrush";
+    string $pythonInitialize = "UseNgBrush.stroke_initialize()";
+    string $passed_vars = ("(" + $surfaceName + ")");
+    string $python_func = ($pythonInstance + $passed_vars);
+    python( $python_func );
+    python( $pythonInitialize );
+}
+
+
+global proc ngSkinAlexUtilRetract(int $surfaceID, int $index, float $value)
+{
+    string $pythonString = "UseNgBrush.retract_paint";
+    string $passed_vars = ("(" + $index + ", " + $value + ")");
+    string $python_func = ($pythonString + $passed_vars);
+    python( $python_func );
+}
+
+
+global proc ngSkinAlexUtilContrast(int $surfaceID, int $index, float $value)
+{
+    string $pythonString = "UseNgBrush.contrast_paint";
+    string $passed_vars = ("(" + $index + ", " + $value + ")");
+    string $python_func = ($pythonString + $passed_vars);
+    python( $python_func );
+}
+
+global proc ngSkinAlexUtilSpread(int $surfaceID, int $index, float $value)
+{
+    string $pythonString = "UseNgBrush.spread_paint";
+    string $passed_vars = ("(" + $index + ", " + $value + ")");
+    string $python_func = ($pythonString + $passed_vars);
+    python( $python_func );
+}
+
+global proc ngSkinAlexUtilGain(int $surfaceID, int $index, float $value)
+{
+    string $pythonString = "UseNgBrush.gain_paint";
+    string $passed_vars = ("(" + $index + ", " + $value + ")");
+    string $python_func = ($pythonString + $passed_vars);
+    python( $python_func );
+}
+
+global proc ngSkinAlexUtilVolEq(int $surfaceID, int $index, float $value)
+{
+    string $pythonString = "UseNgBrush.volume_equalize";
+    string $passed_vars = ("(" + $index + ", " + $value + ")");
+    string $python_func = ($pythonString + $passed_vars);
+    python( $python_func );
+}
+
+
+global proc ngSkinAlexUtilFinalize(int $surfaceID)
+{
+    string $python_func = "UseNgBrush.stroke_finalize()";
+    python( $python_func );
+}
