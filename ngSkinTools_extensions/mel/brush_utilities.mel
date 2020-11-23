@@ -1,58 +1,74 @@
-global proc ngSkinAlexUtilInitialize(int $surfaceName)
+
+// Maya MEL procedures for use with the ngSkinTools plugin.
+// Replaces the Maya Paint Scripts tool MEL commands.
+
+// ------------------------------------------------------------------------------------------------
+// INITIALIZE COMMAND
+global proc ngSkinToolsExt_Initialize(int $surfaceName)
 {
-    string $pythonInstance = "UseNgBrush = ng_extra_tools.UseNgBrush";
+    string $pythonInstance = "UseNgBrush = ngSkinTools_extensions.UseNgBrush";
     string $pythonInitialize = "UseNgBrush.stroke_initialize()";
-    string $passed_vars = ("(" + $surfaceName + ")");
-    string $python_func = ($pythonInstance + $passed_vars);
+    string $passed_vars = ( "(" + $surfaceName + ")" );
+    string $python_func = ( $pythonInstance + $passed_vars );
     python( $python_func );
     python( $pythonInitialize );
 }
+// ------------------------------------------------------------------------------------------------
 
 
-global proc ngSkinAlexUtilRetract(int $surfaceID, int $index, float $value)
+// ------------------------------------------------------------------------------------------------
+// SET VALUE COMMANDS
+global proc ngSkinToolsExt_Conceal(int $surfaceID, int $index, float $value)
 {
-    string $pythonString = "UseNgBrush.retract_paint";
-    string $passed_vars = ("(" + $index + ", " + $value + ")");
-    string $python_func = ($pythonString + $passed_vars);
+    string $pythonString = "UseNgBrush.conceal_paint";
+    string $passed_vars = ( "(" + $index + ", " + $value + ")" );
+    string $python_func = ( $pythonString + $passed_vars );
     python( $python_func );
 }
 
 
-global proc ngSkinAlexUtilContrast(int $surfaceID, int $index, float $value)
+global proc ngSkinToolsExt_Contrast(int $surfaceID, int $index, float $value)
 {
     string $pythonString = "UseNgBrush.contrast_paint";
-    string $passed_vars = ("(" + $index + ", " + $value + ")");
-    string $python_func = ($pythonString + $passed_vars);
+    string $passed_vars = ( "(" + $index + ", " + $value + ")" );
+    string $python_func = ( $pythonString + $passed_vars );
     python( $python_func );
 }
 
-global proc ngSkinAlexUtilSpread(int $surfaceID, int $index, float $value)
+
+global proc ngSkinToolsExt_Spread(int $surfaceID, int $index, float $value)
 {
     string $pythonString = "UseNgBrush.spread_paint";
-    string $passed_vars = ("(" + $index + ", " + $value + ")");
-    string $python_func = ($pythonString + $passed_vars);
+    string $passed_vars = ( "(" + $index + ", " + $value + ")" );
+    string $python_func = ( $pythonString + $passed_vars );
     python( $python_func );
 }
 
-global proc ngSkinAlexUtilGain(int $surfaceID, int $index, float $value)
+
+global proc ngSkinToolsExt_Gain(int $surfaceID, int $index, float $value)
 {
     string $pythonString = "UseNgBrush.gain_paint";
-    string $passed_vars = ("(" + $index + ", " + $value + ")");
-    string $python_func = ($pythonString + $passed_vars);
+    string $passed_vars = ( "(" + $index + ", " + $value + ")" );
+    string $python_func = ( $pythonString + $passed_vars );
     python( $python_func );
 }
 
-global proc ngSkinAlexUtilVolEq(int $surfaceID, int $index, float $value)
+
+global proc ngSkinToolsExt_VolEq(int $surfaceID, int $index, float $value)
 {
     string $pythonString = "UseNgBrush.volume_equalize";
-    string $passed_vars = ("(" + $index + ", " + $value + ")");
-    string $python_func = ($pythonString + $passed_vars);
+    string $passed_vars = ( "(" + $index + ", " + $value + ")" );
+    string $python_func = ( $pythonString + $passed_vars );
     python( $python_func );
 }
+// ------------------------------------------------------------------------------------------------
 
 
-global proc ngSkinAlexUtilFinalize(int $surfaceID)
+// ------------------------------------------------------------------------------------------------
+// FINALIZE COMMAND
+global proc ngSkinToolsExt_Finalize(int $surfaceID)
 {
     string $python_func = "UseNgBrush.stroke_finalize()";
     python( $python_func );
 }
+// ------------------------------------------------------------------------------------------------

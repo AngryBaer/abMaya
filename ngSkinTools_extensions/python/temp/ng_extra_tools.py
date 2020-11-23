@@ -1,9 +1,9 @@
 """
 
-    this module adds three custom paint operations to the ng skin tools plugin UI
+    Add custom paint operations to the ng skin tools plugin
 
         these operations include:
-         - retract
+         - conceal
          - spread
          - contrast
          - gain
@@ -13,9 +13,6 @@
          - shrink map
          - grow map
          - flood brush
-
-    Author: Alexander Baehr, 2017
-
 """
 
 import maya.cmds as cmds
@@ -114,12 +111,12 @@ class UseNgBrush(object):
         cmds.ngSkinLayer(paintIntensity=contrast_weight)
         cmds.ngLayerPaintCtxSetValue(self.stroke_id, vert_id, 1)
 
-    def retract_paint(self, vert_id, value):
+    def conceal_paint(self, vert_id, value):
         """ smooth operation that only lowers weight values """
         vertex_weight = self.ngs_weight_list[vert_id]
         if vertex_weight <= self.min_value:
             return
-        vertex_name = '.'.join([self.selection_name[0], 'vtx[%d]' % vert_id])
+        vertex_name = '{}.vtx[{}]'.format(self.selection_name[0], vert_id)
         area_vertices = get_surrounding_verts(vertex_name)
         weight_list = [self.ngs_weight_list[int(x)] for x in area_vertices]
         weight_avg = sum(weight_list) / float(len(weight_list))
@@ -128,9 +125,9 @@ class UseNgBrush(object):
         if weight_avg >= self.max_value and abs(weight_avg - vertex_weight) <= threshold:
             return
         weight_diff = abs(weight_avg - vertex_weight)
-        retract_weight = vertex_weight * (1 - (weight_diff * value))
-        retract_weight = max(retract_weight, min_avg)
-        cmds.ngSkinLayer(paintIntensity=retract_weight)
+        conceal_weight = vertex_weight * (1 - (weight_diff * value))
+        conceal_weight = max(conceal_weight, min_avg)
+        cmds.ngSkinLayer(paintIntensity=conceal_weight)
         cmds.ngLayerPaintCtxSetValue(self.stroke_id, vert_id, 1)
 
     def spread_paint(self, vert_id, value):
@@ -255,7 +252,7 @@ class MapOperations(object):
             new_weight_list.append(shrink_weight)
         self.mll.setInfluenceWeights(self.ngs_layer_id, self.ngs_influence, new_weight_list)
 
-    def retract_map(self, intensity):
+    def conceal_map(self, intensity):
         """ smooth operation for the active map by only lowering values """
         self.get_data()
         new_weight_list = []
@@ -274,9 +271,9 @@ class MapOperations(object):
                 new_weight_list.append(vertex_weight)
                 continue
             weight_diff = abs(weight_avg - vertex_weight)
-            retract_weight = vertex_weight * (1 - (weight_diff * intensity))
-            retract_weight = max(retract_weight, min_avg)
-            new_weight_list.append(retract_weight)
+            conceal_weight = vertex_weight * (1 - (weight_diff * intensity))
+            conceal_weight = max(conceal_weight, min_avg)
+            new_weight_list.append(conceal_weight)
         self.mll.setInfluenceWeights(self.ngs_layer_id, self.ngs_influence, new_weight_list)
 
     def spread_map(self, intensity):
@@ -345,12 +342,12 @@ class PaintExtras(object):
         self.check_color_set = 'checkSetBlue'
         self.mo = MapOperations()
         self.radio_text = 'Mode:'
-        self.retract = 'Retract'
+        self.conceal = 'Conceal'
         self.spread = 'Spread'
         self.contrast = 'Contrast'
         self.gain = "Gain"
         self.volume = "Volume EQ"
-        self.defaultOp = 'Retract'
+        self.defaultOp = 'Conceal'
         self.select_mode = True
         self.intensityField = 'Intensity'
         self.defaultVal = 1
@@ -428,8 +425,8 @@ class PaintExtras(object):
         paint_mode = cmds.radioCollection(self.mode_collection, q=True, select=True)
         cmds.rowLayout(self.volume_row, e=True, enable=False)
         cmds.button(self.floodButton, e=True, enable=True)
-        if paint_mode == "retract_radio":
-            cmds.artUserPaintCtx("ngSkinToolsLayerPaintCtx", e=True, setValueCommand="ngSkinAlexUtilRetract")
+        if paint_mode == "conceal_radio":
+            cmds.artUserPaintCtx("ngSkinToolsLayerPaintCtx", e=True, setValueCommand="ngSkinAlexUtilconceal")
         if paint_mode == "spread_radio":
             cmds.artUserPaintCtx("ngSkinToolsLayerPaintCtx", e=True, setValueCommand="ngSkinAlexUtilSpread")
         if paint_mode == "contrast_radio":
@@ -450,8 +447,8 @@ class PaintExtras(object):
         """ applies selected operation to the entire mesh """
         intensity = cmds.floatSlider(self.extra_slider, q=True, value=True)
         paint_mode = cmds.radioCollection(self.mode_collection, q=True, select=True)
-        if paint_mode == "retract_radio":
-            self.mo.retract_map(intensity)
+        if paint_mode == "conceal_radio":
+            self.mo.conceal_map(intensity)
         if paint_mode == "spread_radio":
             self.mo.spread_map(intensity)
         if paint_mode == "contrast_radio":
@@ -538,7 +535,7 @@ class PaintExtras(object):
         cmds.setParent('..')
         mode_row = cmds.rowColumnLayout(numberOfColumns=2, columnWidth=[(1, 100), (2, 100)])
         self.mode_collection = cmds.radioCollection()
-        cmds.radioButton("retract_radio", label=self.retract, onCommand=self.paint_mode, select=True)
+        cmds.radioButton("conceal_radio", label=self.conceal, onCommand=self.paint_mode, select=True)
         cmds.radioButton("spread_radio", label=self.spread, onCommand=self.paint_mode)
         cmds.radioButton("contrast_radio", label=self.contrast, onCommand=self.paint_mode)
         cmds.radioButton("gain_radio", label=self.gain, onCommand=self.paint_mode)
