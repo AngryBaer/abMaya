@@ -7,13 +7,12 @@
 # IMPORTS
 from maya import cmds
 from maya.api import OpenMaya
-from ngSkinTools.mllInterface import MllInterface
 # ----------------------------------------------------------------------------------------------- #
 
 
 # ----------------------------------------------------------------------------------------------- #
 # UTILITIES
-def get_surrounding_verts(vertex):
+def adjacent_vtx(vertex):
     """ returns a list of vertex indices that are connected by edge with the input vertex """
     edge_list = cmds.polyListComponentConversion(vertex, toEdge=True)
     vertex_list = cmds.polyListComponentConversion(edge_list, toVertex=True)
