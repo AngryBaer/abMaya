@@ -1,5 +1,4 @@
 
-from math import pow, sqrt
 from maya import cmds, mel
 from ngSkinTools.mllInterface import MllInterface
 from ngSkinTools.paint import ngLayerPaintCtxInitialize
