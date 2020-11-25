@@ -1,2 +1,1 @@
-# ngSkinTools api/ui init
-from api import NgPaintStroke
+# ngSkinTools python package init

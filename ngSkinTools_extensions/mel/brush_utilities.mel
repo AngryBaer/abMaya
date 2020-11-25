@@ -6,11 +6,10 @@
 // INITIALIZE COMMAND
 global proc ngSkinToolsCustom_Initialize(int $surfaceName)
 {
-    string $pythonInstance = "NgPaintStroke = ngSkinTools_extensions.NgPaintStroke";
-    string $pythonInitialize = "UseNgBrush.stroke_initialize()";
-    string $passed_vars = ( "(" + $surfaceName + ")" );
-    string $python_func = ( $pythonInstance + $passed_vars );
-    python( $python_func );
+    string $pythonInstance = ( "NgPaintStroke = ngSkinTools_extensions.NgPaintStroke(" + $surfaceName + ")" );
+    python( $pythonInstance );
+
+    string $pythonInitialize = "NgPaintStroke.stroke_initialize()";
     python( $pythonInitialize );
 }
 // ------------------------------------------------------------------------------------------------
@@ -20,9 +19,14 @@ global proc ngSkinToolsCustom_Initialize(int $surfaceName)
 // SET VALUE COMMANDS
 global proc ngSkinToolsCustom_Conceal(int $surfaceID, int $index, float $value)
 {
-    string $pythonString = "NgPaintStroke.conceal_paint";
-    string $passed_vars = ( "(" + $index + ", " + $value + ")" );
-    string $python_func = ( $pythonString + $passed_vars );
+    string $python_func = ( "NgPaintStroke.paint_conceal(" + $index + ", " + $value + ")" );
+    python( $python_func );
+}
+
+
+global proc ngSkinToolsCustom_Spread(int $surfaceID, int $index, float $value)
+{
+    string $python_func = ( "NgPaintStroke.paint_spread(" + $index + ", " + $value + ")" );
     python( $python_func );
 }
 
@@ -34,29 +38,16 @@ global proc ngSkinToolsCustom_Contrast(int $surfaceID, int $index, float $value)
 }
 
 
-global proc ngSkinToolsCustom_Spread(int $surfaceID, int $index, float $value)
-{
-    string $pythonString = "NgPaintStroke.spread_paint";
-    string $passed_vars = ( "(" + $index + ", " + $value + ")" );
-    string $python_func = ( $pythonString + $passed_vars );
-    python( $python_func );
-}
-
-
 global proc ngSkinToolsCustom_Gain(int $surfaceID, int $index, float $value)
 {
-    string $pythonString = "NgPaintStroke.gain_paint";
-    string $passed_vars = ( "(" + $index + ", " + $value + ")" );
-    string $python_func = ( $pythonString + $passed_vars );
+    string $python_func = ( "NgPaintStroke.paint_gain(" + $index + ", " + $value + ")" );
     python( $python_func );
 }
 
 
 global proc ngSkinToolsCustom_VolEq(int $surfaceID, int $index, float $value)
 {
-    string $pythonString = "NgPaintStroke.volume_equalize";
-    string $passed_vars = ( "(" + $index + ", " + $value + ")" );
-    string $python_func = ( $pythonString + $passed_vars );
+    string $python_func = ( "NgPaintStroke.paint_equalize(" + $index + ", " + $value + ")" );
     python( $python_func );
 }
 // ------------------------------------------------------------------------------------------------
