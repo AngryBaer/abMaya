@@ -22,7 +22,7 @@ class NgPaintStroke():
         self.surface = surface
         self.selection = cmds.ls(selection=True)[0]
         self.mesh = cmds.listRelatives(self.selection, shapes=True)[0]
-        
+
         self.mll = MllInterface()
         self.ngs_layer_id = self.mll.getCurrentLayer()
         self.ngs_target = self.mll.getCurrentPaintTarget()
@@ -38,14 +38,9 @@ class NgPaintStroke():
 
         return self.surface, self.stroke_id
 
-    def stroke_finalize(self):
-        """ Executes after each brushstroke """
-        if self.stroke_id:
-            cmds.ngLayerPaintCtxFinalize(self.stroke_id)
-        self.stroke_id = None
-        cmds.undoInfo(closeChunk=True)
-
     def paint_contrast(self, vert_id, value):
+        """ sharpen edge of active weight map on brushstroke """
+        
         min_weight = min(self.ngs_weight_list)
         max_weight = max(self.ngs_weight_list)
         weight = self.ngs_weight_list[vert_id]
@@ -53,8 +48,17 @@ class NgPaintStroke():
         if not max_weight > weight > min_weight:
             return  # skip weights with no change
 
-        cmds.ngSkinLayer(paintIntensity=paint.contrast(value, weight, min_weight, max_weight))
+        # apply contrast curve
+        result = paint.contrast(value, weight, min_weight, max_weight)
+        cmds.ngSkinLayer(paintIntensity=result)
         cmds.ngLayerPaintCtxSetValue(self.stroke_id, vert_id, 1)
+
+    def stroke_finalize(self):
+        """ Executes after each brushstroke """
+        if self.stroke_id:
+            cmds.ngLayerPaintCtxFinalize(self.stroke_id)
+        self.stroke_id = None
+        cmds.undoInfo(closeChunk=True)
 # ----------------------------------------------------------------------------------------------- #
 
 

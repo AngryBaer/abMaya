@@ -7,10 +7,25 @@ from scipy.stats import norm
 
 
 # ----------------------------------------------------------------------------------------------- #
-# True constrast operation that preserves minimum and maximum values.
 def contrast(value, weightList, vtxMin, vtxMax):
-    """ sharpen edge of active weight map """
-    avg = (vtxMax + vtxMin) / 2.0 
+    """
+    True contrast operation that preserves minimum and maximum values.
+    Applies a curve to the given list of weight values that increases their distance to the
+    average value.
+
+    :param value:       intensity value of the operation
+                        - float 0.0 - 1.0
+    :param weightList:  current weight values of all vertices
+                        - list [float, float, ...]
+    :param vtxMin:      minimum weight values of all vertices
+                        - float 0.0 - 1.0
+    :param vtxMax:      maximum weight values of all vertices
+                        - float 0.0 - 1.0
+
+    :return result:     modified weight values
+                        - list [float, float, ...]
+    """
+    avg = (vtxMax + vtxMin) / 2.0
     norm_range = vtxMax - vtxMin
 
     applied_list = []

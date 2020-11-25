@@ -7,9 +7,23 @@ from scipy.stats import norm
 
 
 # ----------------------------------------------------------------------------------------------- #
-# True constrast operation that preserves minimum and maximum values.
 def contrast(value, weight, vtxMin, vtxMax):
-    """ sharpen edge of active weight map on brushstroke """
+    """
+    True contrast operation that preserves minimum and maximum values.
+    Applies a curve to the given weight value that increases its distance to the average value.
+
+    :param value:   intensity value of the brush stroke
+                     - float 0.0 - 1.0
+    :param weight:  current weight value of the given vertex
+                     - float 0.0 - 1.0
+    :param vtxMin:  minimum weight value of affected vertices
+                     - float 0.0 - 1.0
+    :param vtxMax:  maximum weight vlaue of affected vertices
+                     - float 0.0 - 1.0
+
+    :return result: modified weight value
+                     - float 0.0 - 1.0
+    """
     norm_range = vtxMax - vtxMin                                                 # find range of normal variable operation
     difference = weight - ((vtxMax + vtxMin) / 2.0)                              # find difference between current weight and average
     multiplier = norm.cdf(difference, loc=0, scale=(0.1 * norm_range)) - weight  # apply normal random variable
