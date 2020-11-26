@@ -1,6 +1,5 @@
 
-# ----------------------------------------------------------------------------------------------- #
-# IMPORTS
+# IMPORTS --------------------------------------------------------------------------------------- #
 from maya import cmds, mel
 from ngSkinTools.mllInterface import MllInterface
 from ngSkinTools.paint import ngLayerPaintCtxInitialize
@@ -38,18 +37,29 @@ class NgPaintStroke():
 
         return self.surface, self.stroke_id
 
-    def paint_contrast(self, vert_id, value):
+    def paint_contrast(self, vtxID, value):
         """ sharpen edge of active weight map on brushstroke """
         min_weight = min(self.ngs_weight_list)
         max_weight = max(self.ngs_weight_list)
-        weight = self.ngs_weight_list[vert_id]
+        weight = self.ngs_weight_list[vtxID]
 
         if not max_weight > weight > min_weight:
             return  # skip weights with no change
 
         result = paint.contrast(value, weight, min_weight, max_weight)
         cmds.ngSkinLayer(paintIntensity=result)
-        cmds.ngLayerPaintCtxSetValue(self.stroke_id, vert_id, 1)
+        cmds.ngLayerPaintCtxSetValue(self.stroke_id, vtxID, 1)
+
+    def paint_gain(self, vtxID, value):
+        """ increase weight intensity, preserving zero weights """
+        weight = self.ngs_weight_list[vtxID]
+
+        if weight == 0:
+            return # skip zero weights
+
+        result = paint.gain(value, weight)
+        cmds.ngSkinLayer(paintIntensity=result)
+        cmds.ngLayerPaintCtxSetValue(self.stroke_id, vtxID, 1)
 
     def stroke_finalize(self):
         """ Executes after each brushstroke """

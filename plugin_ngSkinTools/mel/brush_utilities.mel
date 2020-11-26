@@ -6,7 +6,7 @@
 // INITIALIZE COMMAND
 global proc ngSkinToolsCustom_Initialize(int $surfaceName)
 {
-    string $pythonInstance = ( "NgPaintStroke = ngSkinTools_extensions.NgPaintStroke(" + $surfaceName + ")" );
+    string $pythonInstance = ( "NgPaintStroke = plugin_ngSkinTools.NgPaintStroke(" + $surfaceName + ")" );
     python( $pythonInstance );
 
     string $pythonInitialize = "NgPaintStroke.stroke_initialize()";
