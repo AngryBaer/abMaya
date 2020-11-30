@@ -52,9 +52,16 @@ global proc ngSkinToolsCustom_VolEq(int $surfaceID, int $index, float $value)
 }
 // ------------------------------------------------------------------------------------------------
 
-
+// TESTS ------------------------------------------------------------------------------------------
+global proc ngSkinToolsCustom_Test(int $surfaceID, int $index, float $value)
+{
+    string $python_func = ( "NgPaintStroke._paint_test(" + $index + ", " + $value + ")" );
+    python( $python_func );
+}
 // ------------------------------------------------------------------------------------------------
-// FINALIZE COMMAND
+
+
+// FINALIZE COMMAND -------------------------------------------------------------------------------
 global proc ngSkinToolsCustom_Finalize(int $surfaceID)
 {
     string $python_func = "NgPaintStroke.stroke_finalize()";

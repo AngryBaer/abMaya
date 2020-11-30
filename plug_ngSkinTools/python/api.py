@@ -1,12 +1,25 @@
 
 # IMPORTS --------------------------------------------------------------------------------------- #
+import os
+
 from maya import cmds, mel
 from ngSkinTools.mllInterface import MllInterface
 from ngSkinTools.paint import ngLayerPaintCtxInitialize
 from ngSkinTools.utils import Utils
 
-from .core import adjust, paint, component
+from .core import adjust, paint
 # ----------------------------------------------------------------------------------------------- #
+
+
+MEL_SCRIPT = 'mel/brush_utilities.mel'
+COMMANDS = {
+    'test'    : 'ngSkinToolsCustom_Test',
+    'conceal' : 'ngSkinToolsCustom_Conceal',
+    'spread'  : 'ngSkinToolsCustom_Spread',
+    'contrast': 'ngSkinToolsCustom_Contrast',
+    'gain'    : 'ngSkinToolsCustom_Gain',
+    'equalize': 'ngSkinToolsCustom_VolEq'
+}
 
 
 # ----------------------------------------------------------------------------------------------- #
@@ -33,9 +46,9 @@ class NgPaintStroke():
         cmds.ngSkinLayer(paintOperation=self.MODE, paintIntensity=self.VALUE)
 
         stroke_id_str  = ngLayerPaintCtxInitialize(self.mesh)
-        self.stroke_id = int(stroke_id_str.split(" ")[1])
+        self.STROKE_ID = int(stroke_id_str.split(" ")[1])
 
-        return self.surface, self.stroke_id
+        return self.surface, self.STROKE_ID
 
     def paint_contrast(self, vtxID, value):
         """ sharpen edge of active weight map on brushstroke """
@@ -48,24 +61,31 @@ class NgPaintStroke():
 
         result = paint.contrast(value, weight, min_weight, max_weight)
         cmds.ngSkinLayer(paintIntensity=result)
-        cmds.ngLayerPaintCtxSetValue(self.stroke_id, vtxID, 1)
+        cmds.ngLayerPaintCtxSetValue(self.STROKE_ID, vtxID, 1)
 
     def paint_gain(self, vtxID, value):
         """ increase weight intensity, preserving zero weights """
         weight = self.ngs_weight_list[vtxID]
 
         if weight == 0:
-            return # skip zero weights
+            return # skip weights with no change
 
         result = paint.gain(value, weight)
         cmds.ngSkinLayer(paintIntensity=result)
-        cmds.ngLayerPaintCtxSetValue(self.stroke_id, vtxID, 1)
+        cmds.ngLayerPaintCtxSetValue(self.STROKE_ID, vtxID, 1)
+
+    def paint_test(self, vtxID, value):
+        """ test input of the brush scripts """
+        print('selection:', self.selection)
+        print('surface:  ', self.surface)
+        print('mesh:     ', self.mesh)
+        print('vertex:   ', vtxID, value)
 
     def stroke_finalize(self):
         """ Executes after each brushstroke """
-        if self.stroke_id:
-            cmds.ngLayerPaintCtxFinalize(self.stroke_id)
-        self.stroke_id = None
+        if self.STROKE_ID:
+            cmds.ngLayerPaintCtxFinalize(self.STROKE_ID)
+        self.STROKE_ID = None
         cmds.undoInfo(closeChunk=True)
 # ----------------------------------------------------------------------------------------------- #
 
@@ -76,4 +96,31 @@ class NgMapAdjustment():
 
     def __init__(self):
         pass
+# ----------------------------------------------------------------------------------------------- #
+
+
+# SCRIPT BRUSH SETUP ---------------------------------------------------------------------------- #
+def custom_paint_setup():
+    package_path = os.path.dirname(os.path.dirname(__file__))
+    mel.eval('source "{}/{}"'.format(package_path, MEL_SCRIPT))
+    cmds.artUserPaintCtx(
+        "ngSkinToolsLayerPaintCtx",
+        initializeCmd="ngSkinToolsCustom_Initialize",
+        finalizeCmd="ngSkinToolsCustom_Finalize",
+        e=True,
+    )
+
+def custom_paint_value(valueCommand):
+    cmds.artUserPaintCtx("ngSkinToolsLayerPaintCtx", e=True, setValueCommand=COMMANDS[valueCommand])
+
+def custom_paint_exit():
+    init_cmd = Utils.createMelProcedure(ngLayerPaintCtxInitialize, [('string', 'mesh')], returnType='string')
+    cmds.artUserPaintCtx(
+        "ngSkinToolsLayerPaintCtx",
+        setValueCommand="ngLayerPaintCtxSetValue",
+        initializeCmd=init_cmd,
+        finalizeCmd="ngLayerPaintCtxFinalize",
+        value=1,
+        e=True
+    )
 # ----------------------------------------------------------------------------------------------- #

@@ -1,7 +1,8 @@
 
 # IMPORTS --------------------------------------------------------------------------------------- #
 from math import pow, sqrt
-from scipy.stats import norm
+
+from abMaya.libModel import component
 # ----------------------------------------------------------------------------------------------- #
 
 
@@ -23,10 +24,18 @@ def contrast(value, weight, vtxMin, vtxMax):
     :return result: modified weight value
                      - float 0.0 - 1.0
     """
-    norm_range = vtxMax - vtxMin                                                 # find range of normal variable operation
-    difference = weight - ((vtxMax + vtxMin) / 2.0)                              # find difference between current weight and average
-    multiplier = norm.cdf(difference, loc=0, scale=(0.1 * norm_range)) - weight  # apply normal random variable
-    return max(vtxMin, min(weight + (value * multiplier) , vtxMax))              # clamp output to min/max
+    average = (vtxMax + vtxMin) / 2.0
+    difference = weight - average
+
+    if difference > 0:
+        return min(weight + ((vtxMax - weight) * value), vtxMax)
+
+    if difference == 0:
+        return weight
+
+    if difference < 0:
+        return max(weight - ((weight - vtxMin) * value), vtxMin)
+
 
 
 def gain(value, weight):
