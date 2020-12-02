@@ -1,3 +1,3 @@
 # ngSkinTools extension package init
-from .python import ui
-from .python.api import NgPaintStroke, NgMapAdjustment
+from .python import ui, api
+reload(api)

@@ -11,7 +11,7 @@ from .core import adjust, paint
 # ----------------------------------------------------------------------------------------------- #
 
 
-MEL_SCRIPT = 'mel/brush_utilities.mel'
+MEL_SCRIPT = r'mel/brush_utilities.mel'
 COMMANDS = {
     'test'    : 'ngSkinToolsCustom_Test',
     'conceal' : 'ngSkinToolsCustom_Conceal',
@@ -23,7 +23,7 @@ COMMANDS = {
 
 
 # ----------------------------------------------------------------------------------------------- #
-class NgPaintStroke():
+class NgPaintStroke(object):
     """ Custom ngSkinTools brush setup class """
 
     MODE      = 1
@@ -32,12 +32,11 @@ class NgPaintStroke():
 
     def __init__(self, surface):
         self.surface = surface
-        self.selection = cmds.ls(selection=True)[0]
-        self.mesh = cmds.listRelatives(self.selection, shapes=True)[0]
 
-        self.mll = MllInterface()
-        self.ngs_layer_id = self.mll.getCurrentLayer()
-        self.ngs_target = self.mll.getCurrentPaintTarget()
+        self.mll             = MllInterface()
+        self.ngs_layer_id    = self.mll.getCurrentLayer()
+        self.ngs_target      = self.mll.getCurrentPaintTarget()
+        self.ngs_target_info = self.mll.getTargetInfo()
         self.ngs_weight_list = self.mll.getInfluenceWeights(self.ngs_layer_id, self.ngs_target)
 
     def stroke_initialize(self):
@@ -45,7 +44,7 @@ class NgPaintStroke():
         cmds.undoInfo(openChunk=True, undoName="custom_ngPaintStroke")
         cmds.ngSkinLayer(paintOperation=self.MODE, paintIntensity=self.VALUE)
 
-        stroke_id_str  = ngLayerPaintCtxInitialize(self.mesh)
+        stroke_id_str  = ngLayerPaintCtxInitialize(self.ngs_target_info[0])
         self.STROKE_ID = int(stroke_id_str.split(" ")[1])
 
         return self.surface, self.STROKE_ID
@@ -76,10 +75,9 @@ class NgPaintStroke():
 
     def paint_test(self, vtxID, value):
         """ test input of the brush scripts """
-        print('selection:', self.selection)
-        print('surface:  ', self.surface)
-        print('mesh:     ', self.mesh)
-        print('vertex:   ', vtxID, value)
+        print('surface: ', self.surface)
+        print('target:  ', self.mll.getTargetInfo())
+        print('vertex:  ', vtxID, value)
 
     def stroke_finalize(self):
         """ Executes after each brushstroke """
@@ -102,7 +100,8 @@ class NgMapAdjustment():
 # SCRIPT BRUSH SETUP ---------------------------------------------------------------------------- #
 def custom_paint_setup():
     package_path = os.path.dirname(os.path.dirname(__file__))
-    mel.eval('source "{}/{}"'.format(package_path, MEL_SCRIPT))
+    mel_cmd = 'source "{}"'.format(os.path.join(package_path, MEL_SCRIPT).replace('\\', '/'))
+    mel.eval(mel_cmd)
     cmds.artUserPaintCtx(
         "ngSkinToolsLayerPaintCtx",
         initializeCmd="ngSkinToolsCustom_Initialize",
@@ -111,7 +110,11 @@ def custom_paint_setup():
     )
 
 def custom_paint_value(valueCommand):
-    cmds.artUserPaintCtx("ngSkinToolsLayerPaintCtx", e=True, setValueCommand=COMMANDS[valueCommand])
+    cmds.artUserPaintCtx(
+        "ngSkinToolsLayerPaintCtx",
+        setValueCommand=COMMANDS[valueCommand],
+        e=True
+    )
 
 def custom_paint_exit():
     init_cmd = Utils.createMelProcedure(ngLayerPaintCtxInitialize, [('string', 'mesh')], returnType='string')

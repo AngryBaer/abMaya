@@ -27,11 +27,11 @@ def contrast(value, weight, vtxMin, vtxMax):
     average = (vtxMax + vtxMin) / 2.0
     difference = weight - average
 
-    if difference > 0:
-        return min(weight + ((vtxMax - weight) * value), vtxMax)
-
     if difference == 0:
         return weight
+
+    if difference > 0:
+        return min(weight + ((vtxMax - weight) * value), vtxMax)
 
     if difference < 0:
         return max(weight - ((weight - vtxMin) * value), vtxMin)

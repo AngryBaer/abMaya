@@ -1,7 +1,6 @@
 
 # IMPORTS --------------------------------------------------------------------------------------- #
 from math import pow, sqrt
-from scipy.stats import norm
 # ----------------------------------------------------------------------------------------------- #
 
 
@@ -32,9 +31,18 @@ def contrast(value, weightList, vtxMin, vtxMax):
         if not vtxMax > weight > vtxMin:
             applied_list.append(weight)
             continue
+
         difference = weight - avg
-        multiplier = norm.cdf(difference, loc=0, scale=(0.1 * norm_range)) - weight
-        result = max(vtxMin, min((weight + value * multiplier), vtxMax))
+
+        if difference == 0:
+            result = weight
+
+        if difference > 0:
+            result = min(weight + ((vtxMax - weight) * value), vtxMax)
+
+        if difference < 0:
+            result = max(weight - ((weight - vtxMin) * value), vtxMin)
+
         applied_list.append(result)
 
     return applied_list
