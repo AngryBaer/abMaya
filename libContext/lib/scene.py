@@ -3,8 +3,8 @@ Maya scene specific context managers.
 """
 
 
-# ----------------------------------------------------------------------------------------------- #
-# IMPORTS
+# IMPORTS --------------------------------------------------------------------------------------- #
+import os
 from maya import cmds
 # ----------------------------------------------------------------------------------------------- #
 
@@ -18,7 +18,8 @@ class BypassSceneName(object):
     """
     def __init__(self, tempName):
         """
-        :param tempName: (str) temporary name of the Maya scene.
+        :param tempName: temporary name of the Maya scene.
+                          - str
         """
         self.sceneName = cmds.file(sceneName=True, q=True)
         directory = os.path.dirname(self.sceneName)
