@@ -23,7 +23,7 @@ COMMANDS = {
 
 
 # ----------------------------------------------------------------------------------------------- #
-class NgPaintStroke(object):
+class NgPaintStroke():
     """ Custom ngSkinTools brush setup class """
 
     MODE      = 1
@@ -91,7 +91,14 @@ class NgPaintStroke(object):
 # ----------------------------------------------------------------------------------------------- #
 class NgMapAdjustment():
     """ Custom operations applied onto entire active ngSkinTools layer """
+    def __init__(self):
+        pass
+# ----------------------------------------------------------------------------------------------- #
 
+
+# ----------------------------------------------------------------------------------------------- #
+class NgComponent():
+    """ Custom operations applied to selected components """
     def __init__(self):
         pass
 # ----------------------------------------------------------------------------------------------- #
